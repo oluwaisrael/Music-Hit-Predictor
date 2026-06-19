@@ -60,6 +60,36 @@ print(f"Baseline (majority class) Accuracy: {dummy_acc:.4f}")
 print(f"Random Forest Accuracy:             {accuracy_score(y_test, y_pred):.4f}")
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
+
+# ==========================================
+# 6b. LOGISTIC REGRESSION BASELINE COMPARISON
+# ==========================================
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+print("\n--- Training Logistic Regression ---")
+logreg = LogisticRegression(class_weight='balanced', max_iter=1000, random_state=42)
+logreg.fit(X_train_scaled, y_train)
+logreg_pred = logreg.predict(X_test_scaled)
+logreg_acc = accuracy_score(y_test, logreg_pred)
+
+print("\n=== Model Comparison ===")
+print(f"Baseline (majority class):  {dummy_acc:.4f}")
+print(f"Logistic Regression:        {logreg_acc:.4f}")
+print(f"Random Forest:               {accuracy_score(y_test, y_pred):.4f}")
+
+from sklearn.model_selection import cross_val_score
+
+print("\n--- 5-Fold Cross-Validation ---")
+rf_cv = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+logreg_cv = cross_val_score(logreg, scaler.fit_transform(X), y, cv=5, scoring='accuracy')
+
+print(f"Random Forest CV:        {rf_cv.mean():.4f} (+/- {rf_cv.std():.4f})")
+print(f"Logistic Regression CV:  {logreg_cv.mean():.4f} (+/- {logreg_cv.std():.4f})")
 # ==========================================
 # 7. FEATURE IMPORTANCE
 # ==========================================
