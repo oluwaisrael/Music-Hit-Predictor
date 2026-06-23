@@ -49,11 +49,11 @@ def get_afrobeats_tracks(token):
                 results = response.json()
                 if "tracks" in results and "items" in results["tracks"]:
                     for track in results["tracks"]["items"]:
-                        # NOTE: Spotify populates the popularity key inside the search items object!
+            
                         tracks.append({
                             "name": track["name"],
                             "artist": track["artists"][0]["name"],
-                            "popularity": track.get("popularity", 0),  # Grabbing it safely here
+                            "popularity": track.get("popularity", 0), 
                             "id": track["id"],
                             "duration_ms": track.get("duration_ms", 0),
                             "explicit": track.get("explicit", False),
@@ -72,7 +72,6 @@ def get_afrobeats_tracks(token):
             
     return tracks
 
-# --- MAIN EXECUTION BLOCK ---
 if __name__ == "__main__":
     print("--- SCRIPT STARTED ---")
 
@@ -89,25 +88,23 @@ if __name__ == "__main__":
             print("Dataframe shape:", df.shape)
             
             if not df.empty:
-                # Check if the API actually returned all zeros
+           
                 if (df['popularity'] == 0).all():
                     print("\n⚠️ API returned 0 for all popularities (Field missing/stubbed in environment).")
                     print("Injecting realistic synthetic popularity distribution for modeling...")
                     
-                    # Set a random seed so your results are reproducible
+                   
                     np.random.seed(42)
                     
-                    # Define tier profiles for the artists to make the data realistic
-                    # High-demand mega hits get higher average scores
                     mega_stars = ["Burna Boy", "Wizkid", "Asake", "Rema", "Davido"]
                     
                     generated_pops = []
                     for _, row in df.iterrows():
                         if row['artist'] in mega_stars:
-                            # Normal distribution centered around 82, capped between 0 and 100
+                           
                             score = int(np.clip(np.random.normal(82, 7), 65, 98))
                         else:
-                            # Normal distribution centered around 70 for rising/mid-tier hits
+                       
                             score = int(np.clip(np.random.normal(70, 10), 50, 88))
                         generated_pops.append(score)
                         
